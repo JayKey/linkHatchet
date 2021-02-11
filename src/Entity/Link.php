@@ -34,6 +34,11 @@ class Link
      */
     private $metaAccesses;
 
+    /**
+     * @ORM\OneToOne(targetEntity=MetaCreate::class, mappedBy="link", cascade={"persist", "remove"})
+     */
+    private $metaCreate;
+
     public function __construct()
     {
         $this->metaAccesses = new ArrayCollection();
@@ -94,6 +99,23 @@ class Link
                 $metaAccess->setLink(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMetaCreate(): ?MetaCreate
+    {
+        return $this->metaCreate;
+    }
+
+    public function setMetaCreate(MetaCreate $metaCreate): self
+    {
+        // set the owning side of the relation if necessary
+        if ($metaCreate->getLink() !== $this) {
+            $metaCreate->setLink($this);
+        }
+
+        $this->metaCreate = $metaCreate;
 
         return $this;
     }
