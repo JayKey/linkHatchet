@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\MetaCreate;
 use phpbrowscap\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -50,8 +51,15 @@ class AppController extends AbstractController
             $link->setLongLink($protocol.$longLink);
             $link->setShortLink($this->getRndString(6));
 
+            $metaCreate = new MetaCreate();
+            $now = new \DateTime();
+            $metaCreate->setDateTime($now);
+            $metaCreate->setIp($_SERVER['REMOTE_ADDR']);
+            $metaCreate->setLink($link);
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($link);
+            $em->persist($metaCreate);
             $em->flush();
 
             return $this->render('app/shortLink.html.twig', [
