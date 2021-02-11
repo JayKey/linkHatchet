@@ -3,17 +3,47 @@
 {% block title %}Hello AppController!{% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm">
-                One of three columns
-            </div>
-            <div class="col-sm">
-                One of three columns
-            </div>
-            <div class="col-sm">
-                One of three columns
+    <div class="container-fluid h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-sm-12 col-md-10 offset-md-1">
+                {{ form_start(form) }}
+                    <div class="form-row align-items-center">
+                        <div class="col-auto w-100">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text js-protocol">http://</div>
+                                </div>
+                                {{ form_widget(form.longLink, { attr: { 'class': 'form-control js-long-link' }} ) }}
+                                {{ form_widget(form.protocol, { attr: { 'class': 'js-protocol-field' }} ) }}
+                                <div class="input-group-append">
+                                    {{ form_widget(form.submit, { attr: { 'class': 'btn btn-primary' } }) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{ form_end(form) }}
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function() {
+            $('.js-long-link').on('keyup change', function() {
+                let $longLink = $('.js-long-link').val();
+                if( $longLink.startsWith('https://') ) {
+                    $longLink = $longLink.replace('https://', '');
+                    $('.js-long-link').val($longLink);
+                    $('.js-protocol').html('https://');
+                    $('.js-protocol-field').val('https://');
+                } else if ( $longLink.startsWith('http://') ) {
+                    $longLink = $longLink.replace('http://', '');
+                    $('.js-long-link').val($longLink);
+                    $('.js-protocol').html('http://');
+                    $('.js-protocol-field').val('http://');
+                }
+            });
+        });
+    </script>
 {% endblock %}

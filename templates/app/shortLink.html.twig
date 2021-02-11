@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-sm-12 col-md-10 offset-md-1">
+                <h2 class="w-100">
+                    {{ url('link', { 'code': shortLink }) }}
+                </h2>
+            </div>
+        </div>
+    </div>
+{% endblock %}
