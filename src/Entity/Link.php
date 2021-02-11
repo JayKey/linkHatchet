@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LinkRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,6 +28,16 @@ class Link
      * @ORM\Column(type="string", length=255)
      */
     private $longLink;
+
+    /**
+     * @ORM\OneToMany(targetEntity=MetaAccess::class, mappedBy="link", orphanRemoval=true)
+     */
+    private $metaAccesses;
+
+    public function __construct()
+    {
+        $this->metaAccesses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -52,6 +64,36 @@ class Link
     public function setLongLink(string $longLink): self
     {
         $this->longLink = $longLink;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MetaAccess[]
+     */
+    public function getMetaAccesses(): Collection
+    {
+        return $this->metaAccesses;
+    }
+
+    public function addMetaAccess(MetaAccess $metaAccess): self
+    {
+        if (!$this->metaAccesses->contains($metaAccess)) {
+            $this->metaAccesses[] = $metaAccess;
+            $metaAccess->setLink($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMetaAccess(MetaAccess $metaAccess): self
+    {
+        if ($this->metaAccesses->removeElement($metaAccess)) {
+            // set the owning side to null (unless already changed)
+            if ($metaAccess->getLink() === $this) {
+                $metaAccess->setLink(null);
+            }
+        }
 
         return $this;
     }
