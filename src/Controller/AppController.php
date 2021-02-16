@@ -84,6 +84,12 @@ class AppController extends AbstractController
             'shortLink' => $code
         ));
 
+        if(!$link) {
+            return $this->render('app/index.html.twig', [
+                'controller_name' => 'AppController',
+            ]);
+        }
+
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
         $chain = new Provider\Chain([
@@ -93,28 +99,17 @@ class AppController extends AbstractController
 
         $result = $chain->parse($userAgent);
 
-        $result->getBrowser()->getName(); // Mobile Safari
-        $result->getOperatingSystem()->getName(); // iOS
-        $result->getDevice()->getBrand(); // iPod Touch
-        $result->getDevice()->getBrand(); // Apple
-        $result->getDevice()->getType(); // portable media player
-
-        $resultArray = $result->toArray();
-
-        //var_dump($resultArray);die();
-
-        if(!$link) {
-            return $this->render('app/index.html.twig', [
-                'controller_name' => 'AppController',
-            ]);
-        }
-
         $now = new \DateTime();
 
         $metaAccess = new MetaAccess();
         $metaAccess->setLink($link);
         $metaAccess->setDateTime($now);
         $metaAccess->setIp($_SERVER['REMOTE_ADDR']);
+
+        $metaAccess->setBrowserName($result->getBrowser()->getName());
+        $metaAccess->setOsName($result->getOperatingSystem()->getName());
+        $metaAccess->setDeviceBrand($result->getDevice()->getBrand());
+        $metaAccess->setDeviceType($result->getDevice()->getType());
 
         $em->persist($metaAccess);
         $em->flush();
