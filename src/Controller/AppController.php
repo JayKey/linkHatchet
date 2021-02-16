@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
+use UserAgentParser\Provider;
+
 use App\Entity\Link;
 use App\Entity\MetaAccess;
 
@@ -81,6 +83,25 @@ class AppController extends AbstractController
         $link = $em->getRepository(Link::class)->findOneBy(array(
             'shortLink' => $code
         ));
+
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+        $chain = new Provider\Chain([
+            new Provider\PiwikDeviceDetector(),
+            new Provider\WhichBrowser()
+        ]);
+
+        $result = $chain->parse($userAgent);
+
+        $result->getBrowser()->getName(); // Mobile Safari
+        $result->getOperatingSystem()->getName(); // iOS
+        $result->getDevice()->getBrand(); // iPod Touch
+        $result->getDevice()->getBrand(); // Apple
+        $result->getDevice()->getType(); // portable media player
+
+        $resultArray = $result->toArray();
+
+        //var_dump($resultArray);die();
 
         if(!$link) {
             return $this->render('app/index.html.twig', [
